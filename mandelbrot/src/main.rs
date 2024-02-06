@@ -49,8 +49,7 @@ fn pixel_to_point(
     );
     Complex {
         re: upper_left.re + pixel.0 as f64 * width / bounds.0 as f64,
-        im: upper_left.im - pixel.1 as f64 * height / bounds.1 as f64, // Why subtraction here? pixel.1 increases as we go down,
-                                                                       // but the imaginary component increases as we go up.
+        im: upper_left.im - pixel.1 as f64 * height / bounds.1 as f64,
     }
 }
 
@@ -75,6 +74,22 @@ fn test_parse_complex() {
         })
     );
     assert_eq!(parse_complex(",-0.0625"), None);
+}
+
+#[test]
+fn test_pixel_to_point() {
+    assert_eq!(
+        pixel_to_point(
+            (100, 200),
+            (25, 175),
+            Complex { re: -1.0, im: 1.0 },
+            Complex { re: 1.0, im: -1.0 }
+        ),
+        Complex {
+            re: -0.5,
+            im: -0.75
+        }
+    );
 }
 
 fn main() {

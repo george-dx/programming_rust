@@ -1,8 +1,11 @@
 use std::error::Error;
 use std::fs;
-use std::io;
-use std::io::{stderr, Write};
+use std::io::{self, stderr, Write, BufRead};
 use std::path::Path;
+
+
+type GenericError = Box<dyn std::error::Error + Send + Sync + 'static>;
+type GenericResult<T> = Result<T, GenericError>;
 
 ///Dump an error message to `stderr`.
 ///
@@ -25,6 +28,15 @@ fn _move_all(src: &Path, dst: &Path) -> io::Result<()> {
         fs::rename(entry.path(), dst_file)?; // renaming could fain
     }
     Ok(())
+}
+
+fn _read_numbers(file: &mut dyn BufRead) -> GenericResult<Vec<i64>> {
+    let mut numbers = vec![];
+    for line_result in file.lines() {
+        let line = line_result?;        // reading lines can fail
+        numbers.push(line.parse()?);    // parsing integers can fail
+    }
+    Ok(numbers)
 }
 
 fn main() {}

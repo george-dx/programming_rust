@@ -2,6 +2,13 @@
 name = "fern_simulator"
 version = "0.1.0"
 edition = "2021"
+authors = ["George Daian <georgedaian@example.com>"]
+license = "MIT"
+homepage = "https://thiscan'tbeahomepage.com"
+repository = "https://gitlair.com/thisisalie"
+description = """
+Fern simulation, from the cellular level up.
+"""
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

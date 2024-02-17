@@ -11,6 +11,27 @@ struct TreeNode<T> {
     right: BinaryTree<T>,
 }
 
+impl<T: Ord> BinaryTree<T> {
+    fn add(&mut self, value: T) {
+        match *self {
+            BinaryTree::Empty => {
+                *self = BinaryTree::NonEmpty(Box::new(TreeNode {
+                    element: value,
+                    left: BinaryTree::Empty,
+                    right: BinaryTree::Empty,
+                }))
+            }
+            BinaryTree::NonEmpty(ref mut node) => {
+                if value <= node.element {
+                    node.left.add(value);
+                } else {
+                    node.right.add(value);
+                }
+            }
+        }
+    }
+}
+
 fn main() {
     let jupiter_tree = NonEmpty(Box::new(TreeNode {
         element: "Jupiter",

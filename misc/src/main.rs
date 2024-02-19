@@ -16,7 +16,7 @@ trait Visible {
 
 impl Visible for Broom {
     fn draw(&self, canvas: &mut Canvas) {
-        for y in self.y - self.height - 1..self.y {
+        for y in self.broomstick_range() {
             canvas.write_at(self.x, y, '|');
         }
         canvas.write_at(self.x, self.y, 'M');

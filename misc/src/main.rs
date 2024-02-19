@@ -27,6 +27,13 @@ impl Visible for Broom {
     }
 }
 
+impl Broom {
+    /// Helper function used by Broom::draw() below.
+    fn broomstick_range(&self) -> Range<i32> {
+        self.y - self.height - 1..self.y
+    }
+}
+
 type GenericError = Box<dyn std::error::Error + Send + Sync + 'static>;
 type GenericResult<T> = Result<T, GenericError>;
 

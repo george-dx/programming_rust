@@ -1,6 +1,6 @@
 use std::error::Error;
 use std::fs;
-use std::io::{self, stderr, Write, Result};
+use std::io::{self, stderr, Result, Write};
 use std::path::Path;
 
 // /// A trait for cahracters, items and scenery - anything in
@@ -50,7 +50,6 @@ impl Write for Sink {
     }
 }
 
-
 ///Dump an error message to `stderr`.
 ///
 /// If another error happens while building the error message
@@ -82,6 +81,33 @@ fn _move_all(src: &Path, dst: &Path) -> io::Result<()> {
 //     }
 //     Ok(numbers)
 // }
+
+pub trait Spliceable {
+    fn splice(&self, other: &Self) -> Self;
+}
+
+pub struct CherryTree {
+    size: i32,
+}
+pub struct MelonTree {
+    size: i32,
+}
+
+impl Spliceable for CherryTree {
+    fn splice(&self, other: &Self) -> Self {
+        CherryTree {
+            size: other.size + self.size,
+        }
+    }
+}
+
+impl Spliceable for MelonTree {
+    fn splice(&self, other: &Self) -> Self {
+        MelonTree {
+            size: other.size + self.size,
+        }
+    }
+}
 
 fn main() -> Result<()> {
     let mut out = Sink;

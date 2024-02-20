@@ -1,41 +1,55 @@
 use std::error::Error;
 use std::fs;
-use std::io::{self, stderr, BufRead, Write};
+use std::io::{self, stderr, Write, Result};
 use std::path::Path;
 
-/// A trait for cahracters, items and scenery - anything in
-/// the game world that's visible on scree
-trait Visible {
-    /// Render this object on the given canvas
-    fn draw(&self, canvas: &mut Canvas);
+// /// A trait for cahracters, items and scenery - anything in
+// /// the game world that's visible on scree
+// trait Visible {
+//     /// Render this object on the given canvas
+//     fn draw(&self, canvas: &mut Canvas);
 
-    /// Return true if clicking at (x, y) should
-    /// select this object
-    fn hit_test(&self, x: i32, y: i32) -> bool;
-}
+//     /// Return true if clicking at (x, y) should
+//     /// select this object
+//     fn hit_test(&self, x: i32, y: i32) -> bool;
+// }
 
-impl Visible for Broom {
-    fn draw(&self, canvas: &mut Canvas) {
-        for y in self.broomstick_range() {
-            canvas.write_at(self.x, y, '|');
-        }
-        canvas.write_at(self.x, self.y, 'M');
+// impl Visible for Broom {
+//     fn draw(&self, canvas: &mut Canvas) {
+//         for y in self.broomstick_range() {
+//             canvas.write_at(self.x, y, '|');
+//         }
+//         canvas.write_at(self.x, self.y, 'M');
+//     }
+
+//     fn hit_test(&self, x: i32, y: i32) -> bool {
+//         self.x == x && self.y - self.height - 1 <= y && y <= self.y
+//     }
+// }
+
+// impl Broom {
+//     /// Helper function used by Broom::draw() below.
+//     fn broomstick_range(&self) -> Range<i32> {
+//         self.y - self.height - 1..self.y
+//     }
+// }
+
+// type GenericError = Box<dyn std::error::Error + Send + Sync + 'static>;
+// type GenericResult<T> = Result<T, GenericError>;
+
+pub struct Sink;
+
+impl Write for Sink {
+    fn write(&mut self, buf: &[u8]) -> Result<usize> {
+        // Claim to have successfully written the whole buffer.
+        Ok(buf.len())
     }
 
-    fn hit_test(&self, x: i32, y: i32) -> bool {
-        self.x == x && self.y - self.height - 1 <= y && y <= self.y
+    fn flush(&mut self) -> Result<()> {
+        Ok(())
     }
 }
 
-impl Broom {
-    /// Helper function used by Broom::draw() below.
-    fn broomstick_range(&self) -> Range<i32> {
-        self.y - self.height - 1..self.y
-    }
-}
-
-type GenericError = Box<dyn std::error::Error + Send + Sync + 'static>;
-type GenericResult<T> = Result<T, GenericError>;
 
 ///Dump an error message to `stderr`.
 ///
@@ -60,13 +74,17 @@ fn _move_all(src: &Path, dst: &Path) -> io::Result<()> {
     Ok(())
 }
 
-fn _read_numbers(file: &mut dyn BufRead) -> GenericResult<Vec<i64>> {
-    let mut numbers = vec![];
-    for line_result in file.lines() {
-        let line = line_result?; // reading lines can fail
-        numbers.push(line.parse()?); // parsing integers can fail
-    }
-    Ok(numbers)
-}
+// fn _read_numbers(file: &mut dyn BufRead) -> GenericResult<Vec<i64>> {
+//     let mut numbers = vec![];
+//     for line_result in file.lines() {
+//         let line = line_result?; // reading lines can fail
+//         numbers.push(line.parse()?); // parsing integers can fail
+//     }
+//     Ok(numbers)
+// }
 
-fn main() {}
+fn main() -> Result<()> {
+    let mut out = Sink;
+    out.write_all(b"hello world\n")?;
+    Ok(())
+}

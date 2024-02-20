@@ -37,7 +37,7 @@ use std::path::Path;
 // type GenericError = Box<dyn std::error::Error + Send + Sync + 'static>;
 // type GenericResult<T> = Result<T, GenericError>;
 
-pub struct Sink;
+struct Sink;
 
 impl Write for Sink {
     fn write(&mut self, buf: &[u8]) -> Result<usize> {
@@ -82,15 +82,39 @@ fn _move_all(src: &Path, dst: &Path) -> io::Result<()> {
 //     Ok(numbers)
 // }
 
-pub trait Spliceable {
+trait Spliceable {
     fn splice(&self, other: &Self) -> Self;
 }
 
-pub struct CherryTree {
+trait MicroSpliceable: Spliceable {
+    fn microsplice(&self, other: &Self) -> Self;
+}
+
+struct CherryTree {
     size: i32,
 }
-pub struct MelonTree {
+struct MelonTree {
     size: i32,
+}
+
+struct CoconutTree {
+    size: i32,
+}
+
+impl Spliceable for CoconutTree {
+    fn splice(&self, other: &Self) -> Self {
+        CoconutTree {
+            size: other.size + self.size,
+        }
+    }
+}
+
+impl MicroSpliceable for CoconutTree {
+    fn microsplice(&self, other: &Self) -> Self {
+        CoconutTree {
+            size: other.size / 10 + self.size,
+        }
+    }
 }
 
 impl Spliceable for CherryTree {

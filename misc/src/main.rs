@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fs;
 use std::io::{self, stderr, Result, Write};
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Neg};
 use std::path::Path;
 
 // /// A trait for cahracters, items and scenery - anything in
@@ -149,6 +149,27 @@ where
 fn test_dot() {
     assert_eq!(dot(&[1, 2, 3, 4], &[1, 1, 1, 1]), 10);
     assert_eq!(dot(&[53.0, 7.0], &[1.0, 5.0]), 88.0);
+}
+
+#[derive(Clone, Copy, Debug)]
+struct Complex<T> {
+    /// Real portion of the complex number
+    re: T,
+    /// Imaginary portion of the complex number
+    im: T,
+}
+
+impl<T> Neg for Complex<T>
+where
+    T: Neg<Output = T>,
+{
+    type Output = Complex<T>;
+    fn neg(self) -> Complex<T> {
+        Complex {
+            re: -self.re,
+            im: -self.im,
+        }
+    }
 }
 
 fn main() -> Result<()> {

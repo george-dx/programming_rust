@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fs;
 use std::io::{self, stderr, Result, Write};
-use std::ops::{Add, Mul, Neg};
+use std::ops::{Add, Mul, Neg, AddAssign};
 use std::path::Path;
 
 // /// A trait for cahracters, items and scenery - anything in
@@ -169,6 +169,16 @@ where
             re: -self.re,
             im: -self.im,
         }
+    }
+}
+
+impl<T> AddAssign for Complex<T>
+where
+    T: AddAssign<T>
+{
+    fn add_assign(&mut self, rhs: Complex<T>) {
+        self.re += rhs.re;
+        self.im += rhs.im;
     }
 }
 

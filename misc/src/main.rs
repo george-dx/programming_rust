@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fs;
 use std::io::{self, stderr, Result, Write};
-use std::ops::{Add, Mul, Neg, AddAssign};
+use std::ops::{Add, AddAssign, Mul, Neg};
 use std::path::Path;
 
 // /// A trait for cahracters, items and scenery - anything in
@@ -174,7 +174,7 @@ where
 
 impl<T> AddAssign for Complex<T>
 where
-    T: AddAssign<T>
+    T: AddAssign<T>,
 {
     fn add_assign(&mut self, rhs: Complex<T>) {
         self.re += rhs.re;
@@ -182,8 +182,38 @@ where
     }
 }
 
+struct Appellation {
+    name: String,
+    nicknames: Vec<String>,
+}
+
+impl Drop for Appellation {
+    fn drop(&mut self) {
+        print!("Dropping {}", self.name);
+        if !self.nicknames.is_empty() {
+            print!(" (AKA {})", self.nicknames.join(", "));
+        }
+        println!("");
+    }
+}
+
 fn main() -> Result<()> {
     let mut out = Sink;
     out.write_all(b"hello world\n")?;
+
+    let mut a = Appellation {
+        name: "Zeus".to_string(),
+        nicknames: vec![
+            "cloud collector".to_string(),
+            "king of the gods".to_string(),
+        ],
+    };
+    println!("before assignment");
+    a = Appellation {
+        name: "Hera".to_string(),
+        nicknames: vec![],
+    };
+    println!("at end of block");
+
     Ok(())
 }

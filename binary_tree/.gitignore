@@ -1,0 +1,4 @@
+/target/debug
+/target/tmp
+/target/.*
+/target/CACHEDIR.TAG

@@ -17,5 +17,12 @@ fn sort_cities_with_closure(cities: &mut Vec<City>) {
 }
 
 fn main() {
-    println!("Hello, world!");
+    let mut greeting = String::from("Hello, ");
+    let greet = move |name| {
+        greeting.push_str(name);
+        println!("{}", greeting);
+    };
+
+    greet.clone()("Alfred");
+    greet.clone()("Bruce");
 }

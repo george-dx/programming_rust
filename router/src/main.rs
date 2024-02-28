@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 struct Request {
     method: String,
     url: String,
@@ -11,27 +12,26 @@ struct Response {
     body: Vec<u8>,
 }
 
-struct BasicRouter<C>
-where
-    C: Fn(&Request) -> Response,
-{
-    routes: HashMap<String, C>,
+type BoxedCallback = Box<dyn Fn(&Request) -> Response>;
+
+struct BasicRouter {
+    routes: HashMap<String, BoxedCallback>,
 }
 
-impl<C> BasicRouter<C>
-where
-    C: Fn(&Request) -> Response,
-{
+impl BasicRouter {
     /// Create an empty router.
-    fn new() -> BasicRouter<C> {
+    fn new() -> BasicRouter {
         BasicRouter {
             routes: HashMap::new(),
         }
     }
 
     /// Add a route to the router.
-    fn add_route(&mut self, url: &str, callback: C) {
-        self.routes.insert(url.to_string(), callback);
+    fn add_route<C>(&mut self, url: &str, callback: C)
+    where
+        C: Fn(&Request) -> Response + 'static,
+    {
+        self.routes.insert(url.to_string(), Box::new(callback));
     }
 }
 

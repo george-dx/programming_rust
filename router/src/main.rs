@@ -34,12 +34,12 @@ impl BasicRouter {
         self.routes.insert(url.to_string(), Box::new(callback));
     }
 
-    fn handle_request(&self, request: &Request) -> Response {
-        match self.routes.get(&request.url) {
-            None => not_found_response(),
-            Some(callback) => callback(request),
-        }
-    }
+    // fn handle_request(&self, request: &Request) -> Response {
+    //     match self.routes.get(&request.url) {
+    //         None => not_found_response(),
+    //         Some(callback) => callback(request),
+    //     }
+    // }
 }
 
 struct FnPointerRouter {
@@ -55,6 +55,25 @@ impl FnPointerRouter {
 
     fn add_route(&mut self, url: &str, callback: fn(&Request) -> Response) {
         self.routes.insert(url.to_string(), callback);
+    }
+}
+
+struct Order {
+    items: Vec<OrderItem>,
+}
+
+struct OrderItem {
+    product_id: u32,
+    quantity: u32,
+    price: f64,
+}
+
+impl IntoIterator for Order {
+    type Item = OrderItem;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.items.into_iter()
     }
 }
 

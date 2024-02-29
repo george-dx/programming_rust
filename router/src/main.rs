@@ -1,4 +1,6 @@
+use rand::random;
 use std::collections::HashMap;
+use std::iter::from_fn;
 struct Request {
     method: String,
     url: String,
@@ -78,5 +80,8 @@ impl IntoIterator for Order {
 }
 
 fn main() {
-    println!("Hello, world!");
+    let lengths: Vec<f64> = from_fn(|| Some((random::<f64>() - random::<f64>()).abs()))
+        .take(1000)
+        .collect();
+    println!("{:?}", lengths);
 }

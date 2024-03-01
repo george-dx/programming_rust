@@ -1,6 +1,7 @@
 use rand::random;
 use std::collections::HashMap;
 use std::iter::from_fn;
+use std::str::FromStr;
 struct Request {
     method: String,
     url: String,
@@ -81,11 +82,23 @@ impl IntoIterator for Order {
 
 fn main() {
     let lengths: Vec<f64> = from_fn(|| Some((random::<f64>() - random::<f64>()).abs()))
-        .take(1000)
+        .take(10)
         .collect();
     println!("{:?}", lengths);
 
     let text = " ponies \n giraffes\niguanas \nsquid".to_string();
-    let v: Vec<&str> = text.lines().map(str::trim).filter(|s| *s != "iguanas").collect();
+    let v: Vec<&str> = text
+        .lines()
+        .map(str::trim)
+        .filter(|s| *s != "iguanas")
+        .collect();
     assert_eq!(v, ["ponies", "giraffes", "squid"]);
+
+    let text = "1\nfrond .25 289\n3.1415 estuary\n";
+    for number in text
+        .split_whitespace()
+        .filter_map(|w| f64::from_str(w).ok())
+    {
+        println!("{:4.2}", number.sqrt());
+    }
 }

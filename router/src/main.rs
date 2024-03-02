@@ -1,7 +1,10 @@
 use rand::random;
+use std::cmp::Ordering;
 use std::collections::HashMap;
+use std::io::prelude::*;
 use std::iter::{from_fn, once, repeat};
 use std::str::FromStr;
+
 struct Request {
     method: String,
     url: String,
@@ -78,6 +81,10 @@ impl IntoIterator for Order {
     fn into_iter(self) -> Self::IntoIter {
         self.items.into_iter()
     }
+}
+
+fn cmp(lhs: &f64, rhs: &f64) -> Ordering {
+    lhs.partial_cmp(rhs).unwrap()
 }
 
 fn main() {
@@ -176,4 +183,20 @@ fn main() {
     for line in fizz_buzz {
         println!("{}", line);
     }
+
+    // Consuming iterators - count, sum, product
+    // let stdin = std::io::stdin();
+    // println!("{}", stdin.lock().lines().count());
+    println!("{}", (1..=10).sum::<i32>());
+
+    // max, min
+    assert_eq!([-2, 0, 1, 0, -2, -5].iter().max(), Some(&1));
+
+    // max_by, min_by
+    let numbers = [1.0, 4.0, 2.0];
+    assert_eq!(numbers.iter().copied().max_by(cmp), Some(4.0));
+
+    // let numbers = [1.0, 4.0, std::f64::NAN, 2.0];
+    // assert_eq!(numbers.iter().copied().max_by(cmp), Some(4.0)); // panics
+        
 }

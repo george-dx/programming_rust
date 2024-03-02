@@ -198,5 +198,52 @@ fn main() {
 
     // let numbers = [1.0, 4.0, std::f64::NAN, 2.0];
     // assert_eq!(numbers.iter().copied().max_by(cmp), Some(4.0)); // panics
-        
+
+    // Comparing Item Sequences - any, all
+    let id = "Iterator";
+
+    assert!(id.chars().any(char::is_uppercase));
+    assert!(!id.chars().all(char::is_uppercase));
+
+    // position, rposition, and ExactSizeIterator
+    let text = "Xerxes";
+    assert_eq!(text.chars().position(|c| c == 'e'), Some(1));
+    assert_eq!(text.chars().position(|c| c == 'z'), None);
+
+    // fold and rfold
+    let a = [5, 6, 7, 8, 9, 10];
+
+    assert_eq!(a.iter().fold(0, |n, _| n + 1), 6); // count
+    assert_eq!(a.iter().fold(0, |n, i| n + i), 45); // sum
+
+    assert_eq!(a.iter().cloned().fold(i32::min_value(), std::cmp::max), 10); // max
+
+    // try_fold - same as fold, returning Result
+
+    // nth, nth_back
+    let mut squares = (0..10).map(|i| i * i);
+
+    assert_eq!(squares.nth(4), Some(16));
+    assert_eq!(squares.nth(6), None);
+
+    // last
+    let squares = (0..11).map(|i| i * i);
+    assert_eq!(squares.last(), Some(100));
+
+    // find, rfind, find_map
+    let mut populations = HashMap::new();
+    populations.insert("Portland", 583_776);
+    populations.insert("Fossil", 449);
+    populations.insert("Greenhorn", 2);
+    populations.insert("Boring", 7_762);
+    populations.insert("The Dalles", 15_340);
+
+    assert_eq!(
+        populations.iter().find(|&(_name, &pop)| pop > 1_000_000),
+        None
+    );
+    assert_eq!(
+        populations.iter().find(|&(_name, &pop)| pop > 500_000),
+        Some((&"Portland", &583_776))
+    );
 }

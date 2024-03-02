@@ -1,6 +1,6 @@
 use rand::random;
 use std::collections::HashMap;
-use std::iter::from_fn;
+use std::iter::{from_fn, once, repeat};
 use std::str::FromStr;
 struct Request {
     method: String,
@@ -111,5 +111,69 @@ fn main() {
     let countries = ["Japan", "Brazil", "Kenya"];
     for &city in countries.iter().flat_map(|country| &major_cities[country]) {
         println!("{}", city);
+    }
+
+    // Reversible iterators and rev
+    let bee_parts = ["head", "thorax", "abdomen"];
+    let mut iter = bee_parts.iter();
+
+    assert_eq!(iter.next(), Some(&"head"));
+    assert_eq!(iter.next_back(), Some(&"abdomen"));
+    assert_eq!(iter.next(), Some(&"thorax"));
+    assert_eq!(iter.next_back(), None);
+    assert_eq!(iter.next(), None);
+
+    let meals = ["breakfast", "lunch", "dinner"];
+    let mut rev_iter = meals.iter().rev();
+    assert_eq!(rev_iter.next(), Some(&"dinner"));
+    assert_eq!(rev_iter.next(), Some(&"lunch"));
+    assert_eq!(rev_iter.next(), Some(&"breakfast"));
+    assert_eq!(rev_iter.next(), None);
+
+    // Chain
+    let v: Vec<i32> = (1..4).chain(vec![20, 30, 40]).collect();
+    assert_eq!(v, [1, 2, 3, 20, 30, 40]);
+
+    let r_v: Vec<i32> = (1..4).chain(vec![20, 30, 40]).rev().collect();
+    assert_eq!(r_v, [40, 30, 20, 3, 2, 1]);
+
+    // Enumerate - produces pairs (0, A), (1, B), (2, C)
+
+    // Zip
+    let v: Vec<_> = (0..).zip("ABCD".chars()).collect();
+    assert_eq!(v, vec![(0, 'A'), (1, 'B'), (2, 'C'), (3, 'D')]);
+
+    // By_ref
+    let message = "To: jimb\r\n\
+    From: id\r\n\
+    \r\n\
+    Oooooh, donuts!!\r\n";
+
+    let mut lines = message.lines();
+    println!("Headers:");
+    for header in lines.by_ref().take_while(|l| !l.is_empty()) {
+        println!("{}", header);
+    }
+
+    println!("\nBody:");
+    for body in lines {
+        println!("{}", body);
+    }
+
+    // Cloned, copied
+    let a = ['1', '2', '3', '∞'];
+    assert_eq!(a.iter().next(), Some(&'1'));
+    assert_eq!(a.iter().cloned().next(), Some('1'));
+
+    // Cycle
+    let fizzes = repeat("").take(2).chain(once("fizz")).cycle();
+    let buzzes = repeat("").take(4).chain(once("buzz")).cycle();
+    let fizzes_buzzes = fizzes.zip(buzzes);
+    let fizz_buzz = (1..100).zip(fizzes_buzzes).map(|tuple| match tuple {
+        (i, ("", "")) => i.to_string(),
+        (_, (fizz, buzz)) => format!("{}{}", fizz, buzz),
+    });
+    for line in fizz_buzz {
+        println!("{}", line);
     }
 }

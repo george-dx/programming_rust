@@ -246,4 +246,24 @@ fn main() {
         populations.iter().find(|&(_name, &pop)| pop > 500_000),
         Some((&"Portland", &583_776))
     );
+
+    // The extend trait
+    let mut v: Vec<i32> = (0..5).map(|i| 1 << i).collect();
+    v.extend(&[31, 57, 99, 163]);
+    assert_eq!(v, &[1, 2, 4, 8, 16, 31, 57, 99, 163]);
+
+    // partition
+    let things = ["doorknob", "mushroom", "noodle", "giraffe", "grapefruit"];
+    let (living, nonliving): (Vec<&str>, Vec<&str>) = things.iter().partition(|name| name.as_bytes()[0] & 1 != 0);
+
+    assert_eq!(living, vec!["mushroom", "giraffe", "grapefruit"]);
+    assert_eq!(nonliving, vec!["doorknob", "noodle"]);
+
+    // for_each and try_for_each
+    ["doves", "hens", "birds"].iter().zip(["turtle", "french", "calling"].iter()).zip(2..5).rev()
+        .map(|((item, kind), quantity)| {
+            format!("{} {} {}", quantity, kind, item)
+        }).for_each(|gift| {
+            println!("You received: {}", gift);
+        })
 }

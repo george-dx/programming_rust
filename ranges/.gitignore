@@ -1,0 +1,5 @@
+/target/debug
+/target/tmp
+/target/.*
+/target/CACHEDIR.TAG
+/target/.rustc_info.json

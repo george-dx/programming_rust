@@ -1,4 +1,4 @@
-use std::fmt::Write;
+use std::{fmt::Write, rc::Rc};
 
 fn main() {
     let full = "bookkeeping";
@@ -55,4 +55,18 @@ fn main() {
 
     let good_utf8: Vec<u8> = vec![0xe9, 0x8c, 0x86];
     assert_eq!(String::from_utf8(good_utf8).ok(), Some("錆".to_string()));
+
+    // Formatting values
+    println!(
+        "{:.3}µs: relocated {} at {:#x} to {:#x}, {} bytes",
+        0.84391, "object", 140737488346304_usize, 6299664_usize, 64
+    );
+
+    assert_eq!(format!("{{a, c}} ⊂ {{a, b, c}}"), "{a, c} ⊂ {a, b, c}");
+
+    let original = Rc::new("mazurka".to_string());
+    let cloned = original.clone();
+    let impostor = Rc::new("mazurka".to_string());
+    println!("text: {}, {}, {}", original, cloned, impostor);
+    println!("pointers: {:p}, {:p}, {:p}", original, cloned, impostor);
 }

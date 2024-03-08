@@ -1,5 +1,8 @@
+use lazy_static::lazy_static;
+use regex::Regex;
 use std::{
     fmt::{self, Write},
+    io::BufRead,
     rc::Rc,
 };
 
@@ -90,4 +93,21 @@ fn main() {
         im: 0.866,
     };
     assert_eq!(format!("{}", one_twenty), "-0.5 + 0.866i");
+
+    let semver = Regex::new(r"(\d+)\.(\d+)\.(\d+)(-[-.[:alnum:]]*)?").unwrap();
+    let haystack = r#"regex = "0.2.5""#;
+    assert!(semver.is_match(haystack));
+
+    lazy_static! {
+        static ref SEMVER: Regex =
+            Regex::new(r"(\d+)\.(\d+)\.(\d+)(-[-.[:alnum:]]*)?").expect("Error parsing regex");
+    }
+
+    let stdin = std::io::stdin();
+    for line_result in stdin.lock().lines() {
+        let line = line_result.unwrap();
+        if let Some(match_) = SEMVER.find(&line) {
+            println!("{}", match_.as_str());
+        }
+    }
 }

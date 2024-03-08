@@ -1,4 +1,19 @@
-use std::{fmt::Write, rc::Rc};
+use std::{
+    fmt::{self, Write},
+    rc::Rc,
+};
+
+struct Complex<T> {
+    re: T,
+    im: T,
+}
+
+impl fmt::Display for Complex<f64> {
+    fn fmt(&self, dest: &mut fmt::Formatter) -> fmt::Result {
+        let im_sign = if self.im < 0.0 { '-' } else { '+' };
+        write!(dest, "{} {} {}i", self.re, im_sign, f64::abs(self.im))
+    }
+}
 
 fn main() {
     let full = "bookkeeping";
@@ -69,4 +84,10 @@ fn main() {
     let impostor = Rc::new("mazurka".to_string());
     println!("text: {}, {}, {}", original, cloned, impostor);
     println!("pointers: {:p}, {:p}, {:p}", original, cloned, impostor);
+
+    let one_twenty = Complex {
+        re: -0.5,
+        im: 0.866,
+    };
+    assert_eq!(format!("{}", one_twenty), "-0.5 + 0.866i");
 }

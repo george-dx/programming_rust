@@ -1,3 +1,4 @@
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{mpsc, Mutex};
 use std::{fs, thread};
 
@@ -26,26 +27,30 @@ use std::{fs, thread};
 //     });
 // }
 
-type PlayerId = u32;
+// type PlayerId = u32;
 
-const GAME_SIZE: usize = 8;
+// const GAME_SIZE: usize = 8;
 
-type WaitingList = Vec<PlayerId>;
+// type WaitingList = Vec<PlayerId>;
 
-struct FernEmpireApp {
-    waiting_list: Mutex<WaitingList>,
+// struct FernEmpireApp {
+//     waiting_list: Mutex<WaitingList>,
+// }
+
+// impl FernEmpireApp {
+//     fn join_waiting_list(&self, player: PLayerId) {
+//         let mut guard = self.waiting_list.lock().unwrap();
+
+//         guard.push(player);
+//         if guard.len() == GAME_SIZE {
+//             let players = guard.split_off(0);
+//             self.start_game(players);
+//         }
+//     }
+// }
+
+static PACKETS_SERVED: AtomicUsize = AtomicUsize::new(0);
+
+fn main() {
+    PACKETS_SERVED.fetch_add(1, Ordering::SeqCst);
 }
-
-impl FernEmpireApp {
-    fn join_waiting_list(&self, player: PLayerId) {
-        let mut guard = self.waiting_list.lock().unwrap();
-
-        guard.push(player);
-        if guard.len() == GAME_SIZE {
-            let players = guard.split_off(0);
-            self.start_game(players);
-        }
-    }
-}
-
-fn main() {}

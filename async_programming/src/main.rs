@@ -1,5 +1,5 @@
 use async_std::io::prelude::*;
-use async_std::net;
+use async_std::{net, task};
 
 async fn cheapo_request(host: &str, port: u16, path: &str) -> std::io::Result<String> {
     let mut socket = net::TcpStream::connect((host, port)).await?;
@@ -11,10 +11,34 @@ async fn cheapo_request(host: &str, port: u16, path: &str) -> std::io::Result<St
     Ok(response)
 }
 
-fn main() -> std::io::Result<()> {
-    use async_std::task;
+async fn cheapo_owning_request(host: String, port: u16, path: String) -> std::io::Result<String> {
+    cheapo_request(&host, port, &path).await
+}
 
-    let response = task::block_on(cheapo_request("example.com", 80, "/"))?;
-    println!("{}", response);
+pub async fn many_requests(requests: Vec<(String, u16, String)>) -> Vec<std::io::Result<String>> {
+    let mut handles = vec![];
+    for (host, port, path) in requests {
+        handles.push(task::spawn_local(cheapo_owning_request(host, port, path)));
+    }
+    let mut results = vec![];
+    for handle in handles {
+        results.push(handle.await);
+    }
+    results
+}
+
+fn main() -> std::io::Result<()> {
+    let requests = vec![
+        ("example.com".to_string(), 80, "/".to_string()),
+        ("www.red-bean.com".to_string(), 80, "/".to_string()),
+        ("en.wikipedia.org".to_string(), 80, "/".to_string()),
+    ];
+    let results = async_std::task::block_on(many_requests(requests));
+    for result in results {
+        match result {
+            Ok(response) => println!("{}", response),
+            Err(err) => eprintln!("error: {}", err),
+        }
+    }
     Ok(())
 }

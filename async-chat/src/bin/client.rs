@@ -1,6 +1,6 @@
 use async_chat::utils::{self, ChatResult};
 use async_chat::{FromClient, FromServer};
-use async_std::{io, net, prelude::*};
+use async_std::{io, net, prelude::*, task};
 use std::sync::Arc;
 
 async fn send_commands(mut to_server: net::TcpStream) -> ChatResult<()> {
@@ -81,4 +81,20 @@ fn get_next_token(mut input: &str) -> Option<(&str, &str)> {
         Some(space) => Some((&input[0..space], &input[space..])),
         None => Some((input, "")),
     }
+}
+
+fn main() -> ChatResult<()> {
+    let address = std::env::args().nth(1).expect("Usage: client ADDRESS:PORT");
+
+    task::block_on(async {
+        let socket = net::TcpStream::connect(address).await?;
+        socket.set_nodelay(true)?;
+
+        let to_server = send_commands(socket.clone());
+        let from_server = handle_replies(socket);
+
+        from_server.race(to_server).await?;
+
+        Ok(())
+    })
 }

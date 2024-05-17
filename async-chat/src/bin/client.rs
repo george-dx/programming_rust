@@ -1,15 +1,16 @@
-use async_std::{prelude::*, io, net};
 use async_chat::utils::{self, ChatResult};
-use async_chat::FromClient;
+use async_chat::{FromClient, FromServer};
+use async_std::{io, net, prelude::*};
 use std::sync::Arc;
 
-
 async fn send_commands(mut to_server: net::TcpStream) -> ChatResult<()> {
-    println!("Commands:\n\
+    println!(
+        "Commands:\n\
     join GROUP\n\
     post GROUP MESSAGE...\n\
     Type Control-D (on Unix) or Control-Z (on Windows) \
-    to close the connection.");
+    to close the connection."
+    );
 
     let mut command_lines = io::BufReader::new(io::stdin()).lines();
     while let Some(command_result) = command_lines.next().await {
@@ -22,6 +23,27 @@ async fn send_commands(mut to_server: net::TcpStream) -> ChatResult<()> {
         utils::send_as_json(&mut to_server, &request).await?;
         to_server.flush().await?;
     }
+    Ok(())
+}
+
+async fn handle_replies(from_server: net::TcpStream) -> ChatResult<()> {
+    let buffered = io::BufReader::new(from_server);
+    let mut reply_stream = utils::receive_as_json(buffered);
+
+    while let Some(reply) = reply_stream.next().await {
+        match reply? {
+            FromServer::Message {
+                group_name,
+                message,
+            } => {
+                println!("Message posted to {}: {}", group_name, message);
+            }
+            FromServer::Error(message) => {
+                println!("Error from server: {}", message);
+            }
+        }
+    }
+
     Ok(())
 }
 

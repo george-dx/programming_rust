@@ -1,8 +1,8 @@
-use async_chat::{FromClient, FromServer};
 use async_chat::utils::{self, ChatResult};
-use async_std::prelude::*;
+use async_chat::{FromClient, FromServer};
 use async_std::io::BufReader;
 use async_std::net::TcpStream;
+use async_std::prelude::*;
 use async_std::sync::{Arc, Mutex};
 
 use crate::group_table::GroupTable;
@@ -22,8 +22,7 @@ impl Outbound {
     }
 }
 
-pub async fn serve(socket: TcpStream, groups: Arc<GroupTable>) -> ChatResult<()>
-{
+pub async fn serve(socket: TcpStream, groups: Arc<GroupTable>) -> ChatResult<()> {
     let outbound = Arc::new(Outbound::new(socket.clone()));
     let buffered = BufReader::new(socket);
     let mut from_client = utils::receive_as_json(buffered);
@@ -36,17 +35,16 @@ pub async fn serve(socket: TcpStream, groups: Arc<GroupTable>) -> ChatResult<()>
                 group.join(outbound.clone());
                 Ok(())
             }
-            FromClient::Post { group_name, message } => {
-                match groups.get(&group_name) {
-                    Some(group) => {
-                        group.post(message);
-                        Ok(())
-                    }
-                    None => {
-                        Err(format!("Group '{}' does not exist", group_name))
-                    }
+            FromClient::Post {
+                group_name,
+                message,
+            } => match groups.get(&group_name) {
+                Some(group) => {
+                    group.post(message);
+                    Ok(())
                 }
-            }
+                None => Err(format!("Group '{}' does not exist", group_name)),
+            },
         };
 
         if let Err(message) = result {

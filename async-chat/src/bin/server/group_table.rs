@@ -14,6 +14,11 @@ impl GroupTable {
     }
 
     pub fn get_or_create(&self, name: Arc<String>) -> Arc<Group> {
-        self.0.lock().unwrap().entry(name.clone()).or_insert_with(|| Arc::new(Group::new(name))).clone()
+        self.0
+            .lock()
+            .unwrap()
+            .entry(name.clone())
+            .or_insert_with(|| Arc::new(Group::new(name)))
+            .clone()
     }
 }

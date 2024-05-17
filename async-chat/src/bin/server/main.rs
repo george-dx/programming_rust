@@ -2,11 +2,11 @@ use async_chat::utils::ChatResult;
 use async_std::prelude::*;
 use std::sync::Arc;
 
-// mod connection;
-// mod group;
-// mod group_table;
+mod connection;
+mod group;
+mod group_table;
 
-// use connection::serve;
+use connection::serve;
 
 fn main() -> ChatResult<()> {
     let address = std::env::args().nth(1).expect("Usage: server ADDRESS");

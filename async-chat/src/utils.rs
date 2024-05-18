@@ -18,7 +18,7 @@ where
     Ok(())
 }
 
-pub fn receive_as_json<S, P>(inbound: S) -> impl Stream<Item = ChatReuslt<P>>
+pub fn receive_as_json<S, P>(inbound: S) -> impl Stream<Item = ChatResult<P>>
 where
     S: async_std::io::BufRead + Unpin,
     P: DeserializeOwned,
@@ -26,6 +26,6 @@ where
     inbound.lines().map(|line_result| -> ChatResult<P> {
         let line = line_result?;
         let parsed = serde_json::from_str::<P>(&line)?;
-        OK(parsed)
+        Ok(parsed)
     })
 }

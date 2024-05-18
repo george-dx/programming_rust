@@ -9,7 +9,7 @@ impl GroupTable {
         GroupTable(Mutex::new(HashMap::new()))
     }
 
-    pub fn get(&self, naem: &String) -> Option<Arc<Group>> {
+    pub fn get(&self, name: &String) -> Option<Arc<Group>> {
         self.0.lock().unwrap().get(name).cloned()
     }
 

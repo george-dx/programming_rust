@@ -11,7 +11,7 @@ pub struct Outbound(Mutex<TcpStream>);
 
 impl Outbound {
     pub fn new(to_client: TcpStream) -> Outbound {
-        Outbound(Mutex::new(to_client));
+        Outbound(Mutex::new(to_client))
     }
 
     pub async fn send(&self, packet: FromServer) -> ChatResult<()> {

@@ -50,6 +50,62 @@ impl<T> GapBuffer<T> {
             None
         }
     }
+
+    pub fn set_position(&mut self, pos: usize) {
+        if pos > self.len() {
+            panic!("Index {} out of range for GapBuffer", pos);
+        }
+
+        unsafe {
+            let gap = self.gap.clone();
+            if pos > gap.start {
+                let distance = pos - gap.start;
+                std::ptr::copy(self.space(gap.end), self.space_mut(gap.start), distance);
+            } else if pos < gap.start {
+                let distance = gap.start - pos;
+                std::ptr::copy(
+                    self.space(pos),
+                    self.space_mut(gap.end - distance),
+                    distance,
+                );
+            }
+
+            self.gap = pos..pos + gap.len();
+        }
+    }
+
+    pub fn insert(&mut self, elt: T) {
+        if self.gap.len() == 0 {
+            // TODO: Enlarge gap
+            // self.enlarge_gap();
+        }
+
+        unsafe {
+            let index = self.gap.start;
+            std::ptr::write(self.space_mut(index), elt);
+        }
+        self.gap.start += 1;
+    }
+
+    pub fn insert_iter<I>(&mut self, iterable: I) where I: IntoIterator<Item=T>
+    {
+        for item in iterable {
+            self.insert(item)
+        }
+    }
+
+    pub fn remove(&mut self) -> Option<T> {
+        if self.gap.end == self.capacity() {
+            return None;
+        }
+
+        let element = unsafe {
+            std::ptr::read(self.space(self.gap.end))
+        };
+        self.gap.end += 1;
+        Some(element)
+    }
+    
 }
 
 fn main() {}
